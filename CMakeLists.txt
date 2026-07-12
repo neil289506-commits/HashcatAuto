@@ -13,7 +13,7 @@ set(CMAKE_AUTORCC ON)
 # 尋找 Qt6 必要組件 (包含網路與視窗系統)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network)
 
-# 執行檔的源檔案清單 (在此必須加入全新的多線程下載器)
+# 執行檔的源檔案清單 (在此必須加入全新的多線程下載器、終端機、獨立日誌視窗與 ConPTY 包裝)
 set(PROJECT_SOURCES
     src/main.cpp
     src/mainwindow.cpp
@@ -21,11 +21,19 @@ set(PROJECT_SOURCES
     src/multithreaddownloader.cpp
     src/multithreaddownloader.h
     src/app.rc
+    src/cmd.cpp
+    src/cmd.h
+    src/logwindow.cpp
+    src/logwindow.h
+    src/pseudoconsole.cpp
+    src/pseudoconsole.h
 )
 
 # 視窗程式設定 (避免在 Windows 背景啟動多餘的 CMD 視窗)
 if(WIN32)
     add_executable(HashcatTool WIN32 ${PROJECT_SOURCES})
+    # ConPTY (CreatePseudoConsole) 需要 Windows 10 1809 (組建 17763) 以上的 SDK 定義
+    target_compile_definitions(HashcatTool PRIVATE _WIN32_WINNT=0x0A00 WINVER=0x0A00)
 else()
     add_executable(HashcatTool ${PROJECT_SOURCES})
 endif()
